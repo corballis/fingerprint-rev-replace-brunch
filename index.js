@@ -1,61 +1,74 @@
 'use strict';
 
+const path = require('path');
+const fs = require('fs');
 
 class FingerPrintsRevReplacePlugin {
   constructor(config) {
-    // Replace 'plugin' with your plugin's name;
-    this.config = config.plugins.plugin || {};
+    this.config = config.plugins.fingerprintsRevReplace || {};
+
+    if (!this.config.canonicalUris) {
+      this.config.canonicalUris = true;
+    }
+
+    this.config.prefix = this.config.prefix || '';
+    this.config.replaceInExtensions = this.config.replaceInExtensions || ['.js', '.css', '.html'];
+    this.config.manifest = this.config.manifest || './' + path.join(config.paths.public, 'assets.json');
   }
 
-  // Optional
-  // Specifies additional files which will be included into build.
-  // get include() { return ['path-to-file-1', 'path-to-file-2']; }
+  onCompile(files) {
+    this.renames = [];
+    this.readManifest();
+    this.replaceContents(files);
+  }
 
-  // file: File => Promise[Boolean]
-  // Called before every compilation. Stops it when the error is returned.
-  // Examples: ESLint, JSHint, CSSCheck.
-  // lint(file) { return Promise.resolve(true); }
+  readManifest() {
+    var that = this;
+    var manifest = JSON.parse(fs.readFileSync(this.config.manifest, 'utf8').toString());
+    Object.keys(manifest).forEach(function (srcFile) {
+      that.renames.push({
+        unreved: that.canonicalizeUri(srcFile),
+        reved: that.config.prefix + that.canonicalizeUri(manifest[srcFile])
+      });
+    });
+  }
 
-  // file: File => Promise[File]
-  // Transforms a file data to different data. Could change the source map etc.
-  // Examples: JSX, CoffeeScript, Handlebars, SASS.
-  // compile(file) { return Promise.resolve(file); }
+  canonicalizeUri(filePath) {
+    if (path.sep !== '/' && this.config.canonicalUris) {
+      filePath = filePath.split(path.sep).join('/');
+    }
 
-  // file: File => Promise[Array: Path]
-  // Allows Brunch to calculate dependants of the file and re-compile them too.
-  // Examples: SASS '@import's, Jade 'include'-s.
-  // getDependencies(file) { return Promise.resolve(['dep.js']); }
+    return filePath;
+  }
 
-  // file: File => Promise[File]
-  // Usually called to minify or optimize the end-result.
-  // Examples: UglifyJS, CSSMin.
-  // optimize(file) { return Promise.resolve({data: minify(file.data)}); }
+  replaceContents(files) {
+    var that = this;
+    this.renames = this.renames.sort(this.byLongestUnreved);
 
-  // files: [File] => null
-  // Executed when each compilation is finished.
-  // Examples: Hot-reload (send a websocket push).
-  // onCompile(files) {}
+    files.forEach(function replaceInFile(file) {
+      if (that.config.replaceInExtensions.indexOf(path.extname(file.path)) > -1) {
+        var contents = fs.readFileSync(file.path, 'utf8').toString();
 
-  // Allows to stop web-servers & other long-running entities.
-  // Executed before Brunch process is closed.
-  // teardown() {}
+        that.renames.forEach(function replaceOnce(rename) {
+          var unreved = that.config.modifyUnreved ? that.config.modifyUnreved(rename.unreved) : rename.unreved;
+          var reved = that.config.modifyReved ? that.config.modifyReved(rename.reved) : rename.reved;
+          contents = contents.split(unreved).join(reved);
+          if (that.config.prefix) {
+            contents = contents.split('/' + that.config.prefix).join(that.config.prefix + '/');
+          }
+        });
+
+        fs.writeFileSync(file.path, contents, 'utf8');
+      }
+    });
+  }
+
+  byLongestUnreved(a, b) {
+    return b.unreved.length - a.unreved.length;
+  }
 }
 
-// Required for all Brunch plugins.
 FingerPrintsRevReplacePlugin.prototype.brunchPlugin = true;
-
-// Required for compilers, linters & optimizers.
-// 'javascript', 'stylesheet' or 'template'
-// BrunchPlugin.prototype.type = 'javascript';
-
-// Required for compilers & linters.
-// It would filter-out the list of files to operate on.
-// BrunchPlugin.prototype.extension = 'js';
-// BrunchPlugin.prototype.pattern = /\.js$/;
-
-// Indicates which environment a plugin should be applied to.
-// The default value is '*' for usual plugins and
-// 'production' for optimizers.
-// BrunchPlugin.prototype.defaultEnv = 'production';
+FingerPrintsRevReplacePlugin.prototype.defaultEnv = 'production';
 
 module.exports = FingerPrintsRevReplacePlugin;

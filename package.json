@@ -1,9 +1,9 @@
 {
   "name": "fingerprints-rev-replace-brunch",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Brunch plugin to replace reved asset URLs in compiled files.",
   "author": "Corballis Consulting Ltd.",
-  "homepage": "https://github.com/corballis/fingerprints-rev-replace-brunch",
+  "homepage": "https://github.com/corballis/fingerprints-rev-replace-brunch#readme",
   "license": "MIT",
   "main": "index.js",
   "keywords": [
@@ -20,16 +20,13 @@
   "bugs": {
     "url": "https://github.com/corballis/fingerprints-rev-replace-brunch/issues"
   },
-  "homepage": "https://github.com/corballis/fingerprints-rev-replace-brunch#readme",
   "scripts": {
-    "test": "eslint index.js && mocha"
+    "test": "mocha"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "^3",
-    "eslint": "^3.12.2",
     "mocha": "^3",
-    "eslint-config-brunch": "brunch/eslint-config-brunch"
+    "mock-fs": "^3.12.1"
   }
 }
