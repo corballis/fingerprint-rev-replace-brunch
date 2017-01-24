@@ -27,6 +27,8 @@
   "devDependencies": {
     "chai": "^3",
     "mocha": "^3",
-    "mock-fs": "^3.12.1"
+    "mock-fs": "^3.12.1",
+    "codecov": "1.0.1",
+    "istanbul": "0.4.3"
   }
 }
