@@ -1,6 +1,6 @@
 {
   "name": "fingerprints-rev-replace-brunch",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Brunch plugin to replace reved asset URLs in compiled files.",
   "author": "Corballis Consulting Ltd.",
   "homepage": "https://github.com/corballis/fingerprints-rev-replace-brunch#readme",
