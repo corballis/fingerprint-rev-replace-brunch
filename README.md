@@ -1,6 +1,9 @@
 ## fingerprints-rev-replace-brunch
 Brunch plugin to replace reved asset URLs in compiled files.
 
+[![Build Status](https://travis-ci.org/corballis/fingerprints-rev-replace-brunch.svg?branch=master)](https://travis-ci.org/corballis/fingerprints-rev-replace-brunch)
+[![codecov](https://codecov.io/gh/corballis/fingerprints-rev-replace-brunch/branch/master/graph/badge.svg)](https://codecov.io/gh/corballis/fingerprints-rev-replace-brunch)
+
 ## Usage
 Install the plugin via npm with `npm install --save-dev fingerprints-rev-replace-brunch`.
 
