@@ -5,7 +5,7 @@ const fs = require('fs');
 
 class FingerPrintsRevReplacePlugin {
   constructor(config) {
-    this.config = config.plugins.fingerprintsRevReplace || {};
+    this.config = config.plugins.fingerprintRevReplace || {};
     this.fingerPrintConfig = config.plugins.fingerprint || {};
 
     if (typeof this.config.canonicalUris === 'undefined') {

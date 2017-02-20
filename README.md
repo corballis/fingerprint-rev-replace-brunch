@@ -1,11 +1,11 @@
-## fingerprints-rev-replace-brunch
+## fingerprint-rev-replace-brunch
 Brunch plugin to replace reved asset URLs in compiled files.
 
-[![Build Status](https://travis-ci.org/corballis/fingerprints-rev-replace-brunch.svg?branch=master)](https://travis-ci.org/corballis/fingerprints-rev-replace-brunch)
-[![codecov](https://codecov.io/gh/corballis/fingerprints-rev-replace-brunch/branch/master/graph/badge.svg)](https://codecov.io/gh/corballis/fingerprints-rev-replace-brunch)
+[![Build Status](https://travis-ci.org/corballis/fingerprint-rev-replace-brunch.svg?branch=master)](https://travis-ci.org/corballis/fingerprint-rev-replace-brunch)
+[![codecov](https://codecov.io/gh/corballis/fingerprint-rev-replace-brunch/branch/master/graph/badge.svg)](https://codecov.io/gh/corballis/fingerprint-rev-replace-brunch)
 
 ## Usage
-Install the plugin via npm with `npm install --save-dev fingerprints-rev-replace-brunch`.
+Install the plugin via npm with `npm install --save-dev fingerprint-rev-replace-brunch`.
 
 This plugin is intended to be used with [fingerprint-brunch](https://github.com/dlepaux/fingerprint-brunch). Please make
 sure it is also installed.
@@ -18,7 +18,7 @@ Configure the plugin in the following section of your brunch-config file:
 
 ```
 plugins: {
-    fingerprintsRevReplace: {
+    fingerprintRevReplace: {
             
     }
 }
@@ -45,13 +45,6 @@ Type: `string`
 Default: ``
 
 Add the prefix string to each replacement.
-
-#### options.manifest
-Type: `string`
-
-Default: `./public/assets.json`
-
-The manifest file's path written out by the fingerprint-brunch plugin.
 
 #### options.modifyUnreved, options.modifyReved
 Type: `Function`
@@ -81,7 +74,7 @@ function replaceJsIfMap(filename) {
 And then in your brunch configuration:
 ```js
 plugins: {
-    fingerprintsRevReplace: {
+    fingerprintRevReplace: {
         modifyUnreved: replaceJsIfMap,
         modifyReved: replaceJsIfMap    
     }

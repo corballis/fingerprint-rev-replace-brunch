@@ -158,7 +158,7 @@ describe('Plugin', () => {
     beforeEach(() => {
       plugin = new Plugin({
         plugins: {
-          fingerprintsRevReplace: {
+          fingerprintRevReplace: {
             replaceInExtensions: ['.css']
           }
         },
@@ -213,7 +213,7 @@ describe('Plugin', () => {
     beforeEach(() => {
       plugin = new Plugin({
         plugins: {
-          fingerprintsRevReplace: {
+          fingerprintRevReplace: {
             prefix: 'http://example.com'
           }
         },
@@ -244,7 +244,7 @@ describe('Plugin', () => {
 
       plugin = new Plugin({
         plugins: {
-          fingerprintsRevReplace: {
+          fingerprintRevReplace: {
             modifyUnreved: replaceJsIfMap,
             modifyReved: replaceJsIfMap
           }
