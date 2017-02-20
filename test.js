@@ -15,7 +15,9 @@ const assetsJson = '{\
   "fonts/font.woff": "fonts/font-6ced13b9.woff",\
   "fonts/font.ttf": "fonts/font-82c653e7.ttf",\
   "fonts/font.svg": "fonts/font-52343d4f.svg",\
-  "js/app.js.map": "js/app-12345.js.map"\
+  "js/app.js.map": "js/app-12345.js.map",\
+  "sample.css": "sample.a1be45.css",\
+  "sample.js": "sample.a2c442.js"\
 }';
 
 const indexHtmlPath = path.join(__dirname, 'public', 'index.html');
@@ -122,8 +124,8 @@ describe('Plugin', () => {
 
   beforeEach(() => {
     mock({
+      'assets.json': assetsJson,
       'public': {
-        'assets.json': assetsJson,
         'index.html': indexHtml,
         'sample.css': sampleCss,
         'sample.js': sampleJs
@@ -144,7 +146,7 @@ describe('Plugin', () => {
     });
 
     it('should replace revs', () => {
-      plugin.onCompile([{path: indexHtmlPath}, {path: sampleCssPath}, {path: sampleJsPath}]);
+      plugin.onCompile([{path: sampleCssPath}, {path: sampleJsPath}], [{destinationPath: indexHtmlPath}]);
 
       expectFileContent(indexHtmlPath, expectedIndexHtml);
       expectFileContent(sampleCssPath, expectedSampleCss);
@@ -167,7 +169,7 @@ describe('Plugin', () => {
     });
 
     it('should only replace revs in requested file types', () => {
-      plugin.onCompile([{path: indexHtmlPath}, {path: sampleCssPath}, {path: sampleJsPath}]);
+      plugin.onCompile([{path: sampleCssPath}, {path: sampleJsPath}], [{destinationPath: indexHtmlPath}]);
 
       expectFileContent(indexHtmlPath, indexHtml);
       expectFileContent(sampleCssPath, expectedSampleCss);
@@ -188,7 +190,7 @@ describe('Plugin', () => {
 
       plugin = new Plugin({
         plugins: {
-          fingerprintsRevReplace: {
+          fingerprint: {
             manifest: 'public/assets1.json'
           }
         },
@@ -199,7 +201,7 @@ describe('Plugin', () => {
     });
 
     it('should replace revs', () => {
-      plugin.onCompile([{path: indexHtmlPath}, {path: sampleCssPath}, {path: sampleJsPath}]);
+      plugin.onCompile([{path: sampleCssPath}, {path: sampleJsPath}], [{destinationPath: indexHtmlPath}]);
 
       expectFileContent(indexHtmlPath, expectedIndexHtml);
       expectFileContent(sampleCssPath, expectedSampleCss);
@@ -222,7 +224,7 @@ describe('Plugin', () => {
     });
 
     it('should replace revs', () => {
-      plugin.onCompile([{path: indexHtmlPath}, {path: sampleCssPath}, {path: sampleJsPath}]);
+      plugin.onCompile([{path: sampleCssPath}, {path: sampleJsPath}], [{destinationPath: indexHtmlPath}]);
 
       expectFileContent(indexHtmlPath, expectedPrefixIndexHtml);
       expectFileContent(sampleCssPath, expectedPrefixSampleCss);
@@ -233,8 +235,8 @@ describe('Plugin', () => {
   describe('modifyUnreved and modifyReved options', () => {
     beforeEach(() => {
       mock({
+        'assets.json': assetsJson,
         'public': {
-          'assets.json': assetsJson,
           'sample.css': sampleCss,
           'map.js': mapJsFileBody
         }
@@ -254,7 +256,7 @@ describe('Plugin', () => {
     });
 
     it('should replace revs', () => {
-      plugin.onCompile([{path: sampleCssPath}, {path: mapJsPath}]);
+      plugin.onCompile([{path: sampleCssPath}, {path: mapJsPath}], []);
 
       expectFileContent(sampleCssPath, expectedSampleCss);
       expectFileContent(mapJsPath, expectedMapJsFileBody);
@@ -266,6 +268,47 @@ describe('Plugin', () => {
       }
       return filename;
     }
+  });
+
+  describe('src and dest base path', () => {
+    const sampleCssReved = 'sample.a1be45.css';
+    const sampleJsReved = 'sample.a2c442.js';
+    const sampleCssRevedPath = path.join(__dirname, 'public', sampleCssReved);
+    const sampleJsRevedPath = path.join(__dirname, 'public', sampleJsReved);
+
+    beforeEach(() => {
+      var fileSystem = {
+        'public': {
+          'assets1.json': assetsJson,
+          'index.html': indexHtml
+        }
+      };
+      fileSystem.public[sampleCssReved] = sampleCss;
+      fileSystem.public[sampleJsReved] = sampleJs;
+
+      mock(fileSystem);
+
+      plugin = new Plugin({
+        plugins: {
+          fingerprint: {
+            manifest: 'public/assets1.json',
+            srcBasePath: 'public/',
+            destBasePath: 'public/'
+          }
+        },
+        paths: {
+          public: 'public'
+        }
+      });
+    });
+
+    it('should replace revs', () => {
+      plugin.onCompile([{path: path.join('public', 'sample.css')}, {path: path.join('public', 'sample.js')}], [{destinationPath: indexHtmlPath}]);
+
+      expectFileContent(indexHtmlPath, expectedIndexHtml);
+      expectFileContent(sampleCssRevedPath, expectedSampleCss);
+      expectFileContent(sampleJsRevedPath, expectedSampleJs);
+    });
   });
 
   function expectFileContent(path, expectedContent) {
